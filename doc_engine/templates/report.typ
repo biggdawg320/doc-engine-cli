@@ -1,5 +1,6 @@
 #let setup_doc(
   title: "",
+  title_content: none,
   subtitle: "",
   author: "Anonymous",
   date: datetime.today().display(),
@@ -20,6 +21,7 @@
   let mono = ("DejaVu Sans Mono", "Cascadia Code", "Courier New")
 
   set document(author: author, title: title)
+  let title = if title_content == none { title } else { title_content }
 
   // Wide margins and a short measure: roughly 65 characters a line, which is
   // the range that stays comfortable to read for pages at a time.

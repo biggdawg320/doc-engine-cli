@@ -485,12 +485,32 @@ def convert(markdown: str, base_dir: Path | None = None) -> str:
     return convert_document(markdown, base_dir).body
 
 
-def extract_title(markdown: str) -> str:
+def _title_tokens(markdown: str) -> list[dict]:
     for line in markdown.split("\n"):
         stripped = line.strip()
         if stripped.startswith("# ") and not stripped.startswith("##"):
-            return stripped[2:].strip() or "Documentation"
-    return "Documentation"
+            return mistune.InlineParser()(stripped[2:].strip(), {})
+    return []
+
+
+def extract_title(markdown: str) -> str:
+    """Plain text for metadata; formatting belongs in the displayed title."""
+
+    def text(tokens: list[dict]) -> str:
+        return "".join(
+            text(token["children"]) if "children" in token else token.get("raw", "")
+            for token in tokens
+        )
+
+    return text(_title_tokens(markdown)) or "Documentation"
+
+
+def extract_title_markup(markdown: str) -> str | None:
+    """Render the promoted H1 through the same inline renderer as body headings."""
+    tokens = _title_tokens(markdown)
+    if not tokens:
+        return None
+    return TypstRenderer().render_tokens(tokens, mistune.BlockState())
 
 
 def strip_first_heading(markdown: str) -> str:

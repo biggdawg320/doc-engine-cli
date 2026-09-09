@@ -3,6 +3,7 @@ from doc_engine.converter import (
     convert,
     convert_document,
     extract_title,
+    extract_title_markup,
     strip_first_heading,
 )
 
@@ -221,3 +222,24 @@ class TestAlerts:
         result = convert("> [!TIP]\n> Use **bold** and `code`.\n")
         assert "*bold*" in result
         assert "`code`" in result
+
+
+class TestFormattedTitle:
+    def test_metadata_uses_plain_text(self) -> None:
+        assert extract_title("# **Document** *Title*") == "Document Title"
+
+    def test_display_preserves_emphasis(self) -> None:
+        assert extract_title_markup("# **Document** *Title*") == "*Document* _Title_"
+
+    def test_literal_markers_survive(self) -> None:
+        assert extract_title(r"# \*literal\* and `code_name`") == "*literal* and code_name"
+        assert (
+            extract_title_markup(r"# \*literal\* and `code_name`") == r"\*literal\* and `code_name`"
+        )
+
+    def test_nested_formatting(self) -> None:
+        assert extract_title("# **Bold and *italic***") == "Bold and italic"
+        assert extract_title_markup("# **Bold and *italic***") == "*Bold and _italic_*"
+
+    def test_missing_heading_has_no_markup(self) -> None:
+        assert extract_title_markup("## Body heading") is None

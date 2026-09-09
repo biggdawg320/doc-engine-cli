@@ -1,5 +1,6 @@
 #let setup_doc(
   title: "",
+  title_content: none,
   subtitle: "",
   author: "Anonymous",
   date: datetime.today().display(),
@@ -17,6 +18,7 @@
   let surface = rgb("#f5f2ed")
 
   set document(author: author, title: title)
+  let title = if title_content == none { title } else { title_content }
 
   set page(
     paper: paper,
