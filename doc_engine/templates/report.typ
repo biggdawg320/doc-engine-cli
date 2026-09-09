@@ -21,7 +21,14 @@
   let mono = ("DejaVu Sans Mono", "Cascadia Code", "Courier New")
 
   set document(author: author, title: title)
-  let title = if title_content == none { title } else { title_content }
+  let cover-title = context {
+    // Capture the surrounding title size before raw's default scaling applies.
+    let title-size = text.size
+    show raw.where(block: false): it => text(
+      font: ("Cascadia Code", "DejaVu Sans Mono", "Consolas", "Courier New"),
+      size: title-size, it.text)
+    if title_content == none { title } else { title_content }
+  }
 
   // Wide margins and a short measure: roughly 65 characters a line, which is
   // the range that stays comfortable to read for pages at a time.
@@ -100,7 +107,7 @@
     #v(-12%)
     #line(length: 2.5em, stroke: 3pt + accent-color)
     #v(1.5em)
-    #text(size: 30pt, weight: 600, fill: ink)[#title]
+    #text(size: 30pt, weight: 600, fill: ink)[#cover-title]
     #if subtitle != "" [
       #v(0.7em)
       #text(size: 15pt, fill: muted)[#subtitle]

@@ -18,7 +18,14 @@
   let surface = rgb("#f5f2ed")
 
   set document(author: author, title: title)
-  let title = if title_content == none { title } else { title_content }
+  let cover-title = context {
+    // Capture the surrounding title size before raw's default scaling applies.
+    let title-size = text.size
+    show raw.where(block: false): it => text(
+      font: ("Cascadia Code", "DejaVu Sans Mono", "Consolas", "Courier New"),
+      size: title-size, it.text)
+    if title_content == none { title } else { title_content }
+  }
 
   set page(
     paper: paper,
@@ -88,7 +95,7 @@
   align(center + horizon)[
     #line(length: 40%, stroke: 0.75pt + accent-color)
     #v(1.5em)
-    #text(size: 32pt, weight: 700, fill: ink, style: "italic")[#title]
+    #text(size: 32pt, weight: 700, fill: ink, style: "italic")[#cover-title]
     #if subtitle != "" [
       #v(1em)
       #text(size: 14pt, weight: 400, fill: muted, style: "italic")[#subtitle]

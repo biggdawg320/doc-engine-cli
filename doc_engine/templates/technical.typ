@@ -19,7 +19,14 @@
   let line-color = rgb("#e4e4e7")
 
   set document(author: author, title: title)
-  let title = if title_content == none { title } else { title_content }
+  let cover-title = context {
+    // Capture the surrounding title size before raw's default scaling applies.
+    let title-size = text.size
+    show raw.where(block: false): it => text(
+      font: ("Cascadia Code", "DejaVu Sans Mono", "Consolas", "Courier New"),
+      size: title-size, it.text)
+    if title_content == none { title } else { title_content }
+  }
 
   set page(
     paper: paper,
@@ -98,7 +105,7 @@
     #set text(fill: white)
     #text(font: ("Cascadia Code", "DejaVu Sans Mono", "Consolas"), size: 9pt, fill: white.transparentize(20%))[TECHNICAL DOCUMENT]
     #v(1.2em)
-    #text(font: "Inter", size: 34pt, weight: 800, tracking: -1pt)[#title]
+    #text(font: "Inter", size: 34pt, weight: 800, tracking: -1pt)[#cover-title]
     #if subtitle != "" [
       #v(0.7em)
       #text(font: "Inter", size: 14pt, weight: 400, fill: white.transparentize(15%))[#subtitle]

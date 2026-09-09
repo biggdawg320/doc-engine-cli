@@ -225,6 +225,17 @@ class TestAlerts:
 
 
 class TestFormattedTitle:
+    def test_title_uses_body_plugins_and_citations(self) -> None:
+        for inline in ("~~struck~~ title", "The $x^2$ theorem", "Result [@smith2020]"):
+            assert extract_title_markup(f"# {inline}") == convert(f"# {inline}").strip()[2:]
+
+    def test_plugin_metadata_is_plain(self) -> None:
+        assert extract_title("# ~~Old~~ $x^2$ result") == "Old x^2 result"
+
+    def test_reference_links_use_document_definitions(self) -> None:
+        result = extract_title_markup("# [Guide][ref]\n\n[ref]: https://example.com")
+        assert result == '#link("https://example.com")[Guide]'
+
     def test_metadata_uses_plain_text(self) -> None:
         assert extract_title("# **Document** *Title*") == "Document Title"
 
